@@ -336,6 +336,20 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.add('hidden'), 2600);
 }
 
+// ---------- theme ----------
+(function initTheme() {
+  const saved = localStorage.getItem('tp_theme') || 'dark';
+  document.documentElement.dataset.theme = saved;
+  $('#theme-toggle').textContent = saved === 'dark' ? '☀' : '☾';
+})();
+
+$('#theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('tp_theme', next);
+  $('#theme-toggle').textContent = next === 'dark' ? '☀' : '☾';
+});
+
 // ---------- boot ----------
 (function boot() {
   if (initSupabase()) {
