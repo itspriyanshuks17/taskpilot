@@ -57,7 +57,7 @@
   </header>
 
   <div class="layout">
-    <!-- Side nav -->
+    <!-- Side nav (desktop) -->
     <nav class="side-nav">
       <button class="nav-item active" data-view="today">
         <span class="nav-tick">01</span> Today
@@ -162,6 +162,25 @@
     </div>
   </div>
 </div>
+
+<!-- ============ BOTTOM NAV (mobile) ============ -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" data-view="today">
+    <span class="bnav-icon">◷</span>Today
+  </button>
+  <button class="bottom-nav-item" data-view="upcoming">
+    <span class="bnav-icon">⟳</span>Upcoming
+  </button>
+  <button class="bottom-nav-item" data-view="calendar">
+    <span class="bnav-icon">▦</span>Calendar
+  </button>
+  <button class="bottom-nav-item" data-view="all">
+    <span class="bnav-icon">≡</span>All
+  </button>
+</nav>
+
+<!-- FAB (mobile) -->
+<button class="fab" id="fab-new-task">+</button>
 
 <!-- ============ DAY PANEL ============ -->
 <div id="day-panel" class="day-panel hidden">

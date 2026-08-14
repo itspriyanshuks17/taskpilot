@@ -66,14 +66,16 @@ $('#s-save').addEventListener('click', () => {
 });
 
 // ---------- nav ----------
-$all('.nav-item').forEach(btn => {
-  btn.addEventListener('click', () => {
-    $all('.nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentView = btn.dataset.view;
-    render();
-  });
-});
+function setView(view) {
+  $all('.nav-item, .bottom-nav-item').forEach(b => b.classList.remove('active'));
+  $all(`.nav-item[data-view="${view}"], .bottom-nav-item[data-view="${view}"]`).forEach(b => b.classList.add('active'));
+  currentView = view;
+  render();
+}
+
+$all('.nav-item').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+$all('.bottom-nav-item').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+$('#fab-new-task').addEventListener('click', () => openTaskModal());
 
 // ---------- task modal ----------
 function openTaskModal(task=null) {
@@ -285,7 +287,7 @@ function renderCalendar() {
     const isToday = cellStr === todayStr();
 
     const cell = document.createElement('div');
-    cell.className = 'cal-cell' + (isOutside ? ' outside' : '') + (isToday ? ' is-today' : '');
+    cell.className = 'cal-cell' + (isOutside ? ' outside' : '') + (isToday ? ' is-today' : '') + (dayTasks.length ? ' has-tasks' : '');
     const dayTasks = tasks.filter(t => t.due_date === cellStr);
     cell.innerHTML = `<div class="cal-daynum">${cellDate.getDate()}</div>` +
       dayTasks.slice(0,3).map(t => `<div class="cal-task-pill" data-priority="${t.priority}" data-id="${t.id}">${escapeHtml(t.title)}</div>`).join('') +
