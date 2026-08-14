@@ -1,0 +1,17 @@
+{
+  "name": "taskpilot-reminders",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Actions cron script that emails a daily due/overdue task digest for TaskPilot.",
+  "scripts": {
+    "send-reminders": "node scripts/send-reminders.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
