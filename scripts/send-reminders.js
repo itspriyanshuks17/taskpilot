@@ -22,14 +22,19 @@ const {
 
 function requireEnv(name, value) {
   if (!value) {
-    console.error(`Missing required environment variable: ${name}`);
-    process.exit(1);
+    throw new Error(`Missing required environment variable: ${name}`);
   }
 }
 requireEnv('SUPABASE_URL', SUPABASE_URL);
 requireEnv('SUPABASE_SERVICE_KEY', SUPABASE_SERVICE_KEY);
 requireEnv('RESEND_API_KEY', RESEND_API_KEY);
 requireEnv('NOTIFY_EMAIL', NOTIFY_EMAIL);
+
+if (SUPABASE_SERVICE_KEY.startsWith('sb_publishable_')) {
+  console.warn(
+    'Warning: SUPABASE_SERVICE_KEY appears to be a publishable key. For backend jobs, use the service_role key from Supabase Settings -> API.'
+  );
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
@@ -48,8 +53,12 @@ async function main() {
     .order('due_date', { ascending: true });
 
   if (error) {
-    console.error('Supabase query failed:', error.message);
-    process.exit(1);
+    if (error.message.includes("Could not find the table 'public.tasks'")) {
+      throw new Error(
+        "Supabase query failed: public.tasks table does not exist. Run supabase-schema.sql in Supabase SQL Editor, then re-run this script."
+      );
+    }
+    throw new Error(`Supabase query failed: ${error.message}`);
   }
 
   if (!tasks || tasks.length === 0) {
@@ -82,8 +91,7 @@ async function main() {
 
   if (!res.ok) {
     const body = await res.text();
-    console.error('Resend API error:', res.status, body);
-    process.exit(1);
+    throw new Error(`Resend API error: ${res.status} ${body}`);
   }
 
   console.log(`Reminder sent to ${NOTIFY_EMAIL}: ${dueToday.length} due today, ${overdue.length} overdue.`);
@@ -128,6 +136,6 @@ function escapeHtml(str) {
 }
 
 main().catch(err => {
-  console.error('Unexpected error:', err);
-  process.exit(1);
+  console.error('Unexpected error:', err.message || err);
+  process.exitCode = 1;
 });
