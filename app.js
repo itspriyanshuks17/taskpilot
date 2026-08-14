@@ -187,11 +187,15 @@ async function toggleDone(task) {
 // ---------- rendering ----------
 function todayStr() {
   const d = new Date();
-  return d.toISOString().slice(0,10);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function localDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function daysBetween(dateStr) {
-  const today = new Date(todayStr());
-  const d = new Date(dateStr);
+  const [y,m,day] = dateStr.split('-').map(Number);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(y, m-1, day);
   return Math.round((d - today) / 86400000);
 }
 
@@ -282,7 +286,7 @@ function renderCalendar() {
   for (let i=0; i<42; i++) {
     const cellDate = new Date(gridStart);
     cellDate.setDate(gridStart.getDate() + i);
-    const cellStr = cellDate.toISOString().slice(0,10);
+    const cellStr = localDateStr(cellDate);
     const isOutside = cellDate.getMonth() !== month;
     const isToday = cellStr === todayStr();
 
