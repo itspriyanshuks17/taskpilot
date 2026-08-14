@@ -290,9 +290,9 @@ function renderCalendar() {
     const isOutside = cellDate.getMonth() !== month;
     const isToday = cellStr === todayStr();
 
+    const dayTasks = tasks.filter(t => t.due_date === cellStr);
     const cell = document.createElement('div');
     cell.className = 'cal-cell' + (isOutside ? ' outside' : '') + (isToday ? ' is-today' : '') + (dayTasks.length ? ' has-tasks' : '');
-    const dayTasks = tasks.filter(t => t.due_date === cellStr);
     cell.innerHTML = `<div class="cal-daynum">${cellDate.getDate()}</div>` +
       dayTasks.slice(0,3).map(t => `<div class="cal-task-pill" data-priority="${t.priority}" data-id="${t.id}">${escapeHtml(t.title)}</div>`).join('') +
       (dayTasks.length > 3 ? `<div class="cal-task-pill">+${dayTasks.length-3} more</div>` : '');
