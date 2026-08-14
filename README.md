@@ -54,6 +54,25 @@ In your repo: **Settings → Secrets and variables → Actions → New repositor
 
 The workflow in `.github/workflows/send-reminders.yml` runs daily at 07:30 UTC. Edit the `cron` line to change the time (cron is always in UTC — e.g. for 8:00 AM IST use `30 2 * * *`). You can also trigger it manually anytime from the **Actions** tab → **Send Task Reminders** → **Run workflow**, which is the fastest way to test it.
 
+### Local backend `.env` (optional, for testing script on your machine)
+
+If you want to run the reminder backend script locally, create a `.env` file in the project root with:
+
+```env
+SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_KEY=your-supabase-service-role-key
+RESEND_API_KEY=your-resend-api-key
+NOTIFY_EMAIL=you@example.com
+RESEND_FROM=TaskPilot <onboarding@resend.dev>
+```
+
+Then run:
+
+```bash
+npm install
+npm run send-reminders
+```
+
 ## 5. Enable GitHub Pages
 
 **Settings → Pages → Source: Deploy from a branch → Branch: `main` / root**. After a minute your site is live at `https://<your-username>.github.io/<your-repo>/`.
