@@ -23,6 +23,24 @@ A self-hosted task & calendar tracker: a static site (GitHub Pages) backed by a 
    - **anon public** key — used by the website (safe to expose; the table is set up for single-user personal use)
    - **service_role** key — used only by the GitHub Actions script, kept secret. Never put this in the website.
 
+### Optional: manage Supabase schema via CLI (same setup, terminal-based)
+
+If `supabase` is not installed globally, use `npx supabase` for every command.
+
+```bash
+npx supabase@latest --version
+npx supabase link --project-ref <your-project-ref>
+```
+
+Create a migration, paste the SQL from `supabase-schema.sql` into that migration file, then push:
+
+```bash
+npx supabase migration new create-tasks-schema
+npx supabase db push
+```
+
+Important: if you accidentally push an empty migration, Supabase marks it as applied. In that case, create a new migration with the schema SQL and run `npx supabase db push` again.
+
 ## 2. Set up email (Resend — free, 100 emails/day)
 
 1. Go to [resend.com](https://resend.com) → sign up.
