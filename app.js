@@ -127,6 +127,39 @@ $('#f-delete').addEventListener('click', async () => {
   loadTasks();
 });
 
+// ---------- day panel ----------
+let dayPanelDate = null;
+
+function openDayPanel(dateStr) {
+  dayPanelDate = dateStr;
+  const d = new Date(dateStr + 'T00:00:00');
+  $('#day-panel-title').textContent = d.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  const dayTasks = tasks.filter(t => t.due_date === dateStr)
+    .sort((a,b) => (a.due_time||'').localeCompare(b.due_time||''));
+  const list = $('#day-panel-list');
+  list.innerHTML = '';
+  dayTasks.forEach(t => list.appendChild(taskCard(t)));
+  $('#day-panel-empty').classList.toggle('hidden', dayTasks.length > 0);
+  $('#day-panel').classList.remove('hidden');
+  $('#day-panel-backdrop').classList.remove('hidden');
+}
+
+function closeDayPanel() {
+  $('#day-panel').classList.add('hidden');
+  $('#day-panel-backdrop').classList.add('hidden');
+  dayPanelDate = null;
+}
+
+$('#day-panel-close').addEventListener('click', closeDayPanel);
+$('#day-panel-backdrop').addEventListener('click', closeDayPanel);
+$('#day-panel-add').addEventListener('click', () => {
+  closeDayPanel();
+  openTaskModal({ due_date: dayPanelDate || todayStr(), title:'', priority:'normal', status:'pending', id:null });
+  editingId = null;
+  $('#modal-title').textContent = 'New Task';
+  $('#f-delete').classList.add('hidden');
+});
+
 // ---------- calendar nav ----------
 $('#cal-prev').addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
 $('#cal-next').addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
@@ -139,6 +172,7 @@ async function loadTasks() {
   if (error) { toast('Load error: ' + error.message); return; }
   tasks = data || [];
   render();
+  if (dayPanelDate) openDayPanel(dayPanelDate);
 }
 
 async function toggleDone(task) {
@@ -265,6 +299,8 @@ function renderCalendar() {
         if (t) openTaskModal(t);
       });
     });
+
+    cell.addEventListener('click', () => openDayPanel(cellStr));
   }
 }
 

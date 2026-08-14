@@ -277,6 +277,31 @@ label{
 .setup-sub{color:var(--text-dim); font-size:13px; line-height:1.5; margin-bottom:20px;}
 .setup-hint{color:var(--text-faint); font-size:11.5px; margin-top:4px; line-height:1.5;}
 
+/* ===== day panel ===== */
+.day-panel-backdrop{
+  position:fixed; inset:0; background:rgba(3,7,14,0.5); z-index:40;
+}
+.day-panel{
+  position:fixed; top:0; right:0; bottom:0; width:340px;
+  background:var(--ink-900);
+  border-left:1px solid var(--line);
+  padding:22px;
+  z-index:45;
+  overflow-y:auto;
+  display:flex; flex-direction:column;
+  box-shadow:-12px 0 40px rgba(0,0,0,0.4);
+}
+.day-panel-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:18px;
+}
+.day-panel-title{
+  font-family:var(--mono); font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--cyan);
+}
+.cal-cell{cursor:pointer;}
+.cal-cell:hover{border-color:var(--cyan-dim);}
+
 /* ===== toast ===== */
 .toast{
   position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
