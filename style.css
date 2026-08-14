@@ -222,7 +222,9 @@ label{
   min-height:88px;
   padding:8px;
   display:flex; flex-direction:column; gap:4px;
+  cursor:pointer;
 }
+.cal-cell:hover{border-color:var(--cyan-dim);}
 .cal-cell.outside{opacity:.35;}
 .cal-cell.is-today{border-color:var(--cyan);}
 .cal-daynum{font-family:var(--mono); font-size:11px; color:var(--text-dim);}
@@ -299,8 +301,6 @@ label{
   font-family:var(--mono); font-size:13px; letter-spacing:.06em;
   text-transform:uppercase; color:var(--cyan);
 }
-.cal-cell{cursor:pointer;}
-.cal-cell:hover{border-color:var(--cyan-dim);}
 
 /* ===== toast ===== */
 .toast{
