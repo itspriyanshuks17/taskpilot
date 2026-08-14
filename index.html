@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TaskPilot — Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ FIRST-RUN SETUP SCREEN ============ -->
+<div id="setup-screen" class="setup-screen hidden">
+  <div class="setup-card">
+    <div class="setup-badge">SETUP · 01</div>
+    <h1>Connect your database</h1>
+    <p class="setup-sub">TaskPilot stores tasks in your own free Supabase project. Paste your project URL and anon key below — this only lives in this browser's local storage, never on a server.</p>
+    <label>Supabase Project URL</label>
+    <input id="setup-url" type="text" placeholder="https://xxxxxxxx.supabase.co" />
+    <label>Supabase Anon Key</label>
+    <input id="setup-key" type="text" placeholder="eyJhbGciOi..." />
+    <button id="setup-save" class="btn-primary">Connect</button>
+    <p class="setup-hint">Don't have a project yet? See <strong>README.md</strong> in this repo for the 5-minute setup.</p>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app" class="app hidden">
+
+  <!-- Instrument strip -->
+  <header class="cluster">
+    <div class="cluster-brand">
+      <span class="brand-mark">◈</span>
+      <span class="brand-name">TASKPILOT</span>
+      <span class="brand-sub">MISSION CONSOLE</span>
+    </div>
+    <div class="cluster-gauges">
+      <div class="gauge" data-tone="cyan">
+        <div class="gauge-value" id="stat-today">00</div>
+        <div class="gauge-label">DUE TODAY</div>
+      </div>
+      <div class="gauge" data-tone="red">
+        <div class="gauge-value" id="stat-overdue">00</div>
+        <div class="gauge-label">OVERDUE</div>
+      </div>
+      <div class="gauge" data-tone="amber">
+        <div class="gauge-value" id="stat-upcoming">00</div>
+        <div class="gauge-label">NEXT 7D</div>
+      </div>
+      <div class="gauge" data-tone="dim">
+        <div class="gauge-value" id="stat-done">00</div>
+        <div class="gauge-label">COMPLETED</div>
+      </div>
+    </div>
+    <button id="open-settings" class="icon-btn" title="Connection settings">⚙</button>
+  </header>
+
+  <div class="layout">
+    <!-- Side nav -->
+    <nav class="side-nav">
+      <button class="nav-item active" data-view="today">
+        <span class="nav-tick">01</span> Today
+      </button>
+      <button class="nav-item" data-view="upcoming">
+        <span class="nav-tick">02</span> Upcoming
+      </button>
+      <button class="nav-item" data-view="calendar">
+        <span class="nav-tick">03</span> Calendar
+      </button>
+      <button class="nav-item" data-view="all">
+        <span class="nav-tick">04</span> All Tasks
+      </button>
+      <div class="nav-spacer"></div>
+      <button id="new-task-btn" class="btn-primary nav-cta">+ New Task</button>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+      <div id="view-list" class="view">
+        <div class="view-head">
+          <h2 id="view-title">Today</h2>
+          <span id="view-date" class="view-date"></span>
+        </div>
+        <div id="task-list" class="task-list"></div>
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-mark">—</div>
+          <p>Nothing on the board here. Add a task to bring this panel online.</p>
+        </div>
+      </div>
+
+      <div id="view-calendar" class="view hidden">
+        <div class="view-head">
+          <h2 id="cal-month-label">—</h2>
+          <div class="cal-nav">
+            <button id="cal-prev" class="icon-btn">‹</button>
+            <button id="cal-today" class="btn-ghost">Today</button>
+            <button id="cal-next" class="icon-btn">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ TASK MODAL ============ -->
+<div id="task-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="modal-title">New Task</span>
+      <button id="modal-close" class="icon-btn">✕</button>
+    </div>
+    <label>Title</label>
+    <input id="f-title" type="text" placeholder="e.g. Submit VMHV test report" />
+    <div class="modal-row">
+      <div>
+        <label>Due date</label>
+        <input id="f-date" type="date" />
+      </div>
+      <div>
+        <label>Due time (optional)</label>
+        <input id="f-time" type="time" />
+      </div>
+    </div>
+    <label>Priority</label>
+    <select id="f-priority">
+      <option value="low">Low</option>
+      <option value="normal" selected>Normal</option>
+      <option value="high">High</option>
+    </select>
+    <label>Notes (optional)</label>
+    <textarea id="f-notes" rows="3" placeholder="Details, links, context..."></textarea>
+    <div class="modal-actions">
+      <button id="f-delete" class="btn-danger hidden">Delete</button>
+      <div class="modal-actions-right">
+        <button id="f-cancel" class="btn-ghost">Cancel</button>
+        <button id="f-save" class="btn-primary">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div id="settings-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-head">
+      <span>Connection Settings</span>
+      <button id="settings-close" class="icon-btn">✕</button>
+    </div>
+    <label>Supabase Project URL</label>
+    <input id="s-url" type="text" />
+    <label>Supabase Anon Key</label>
+    <input id="s-key" type="text" />
+    <label>Notification email (for reminders)</label>
+    <input id="s-email" type="email" placeholder="you@example.com" />
+    <p class="setup-hint">The reminder email is used by the GitHub Actions workflow — set it as the <strong>NOTIFY_EMAIL</strong> repo secret too (see README).</p>
+    <div class="modal-actions">
+      <div class="modal-actions-right">
+        <button id="s-save" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
